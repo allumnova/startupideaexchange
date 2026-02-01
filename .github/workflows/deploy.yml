@@ -5,47 +5,31 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: allumnova/startupideaexchange
-
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
 
-      - name: Build and push Backend image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:backend
-
-      - name: Build and push Frontend image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./frontend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:frontend
-
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to VPS
+      - name: Copy files to VPS
+        run: |
+          # Create directory if not exists
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} "mkdir -p ~/startup-marketplace"
+          
+          # Copy backend, frontend, and compose file
+          # We use tar + ssh for faster transfer than individual scp calls
+          tar czf deploy_bundle.tar.gz backend frontend docker-compose.prod.yml
+          scp -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no deploy_bundle.tar.gz ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~/startup-marketplace/
+          
+      - name: Deploy on VPS
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VPS_IP }}
@@ -54,16 +38,14 @@ jobs:
           script: |
             cd ~/startup-marketplace
             
-            # Login to GHCR
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # Extract the code
+            tar xzf deploy_bundle.tar.gz
+            rm deploy_bundle.tar.gz
             
-            # Define correct image name (lowercase)
-            export IMAGE_NAME=${{ env.IMAGE_NAME }}
+            # Build and start containers directly on the VPS
+            # This bypasses all registry/packaging issues
+            docker-compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml up -d --build
             
-            # Pull and restart
-            # docker-compose will substitute ${IMAGE_NAME} from the exported var above
-            docker-compose -f docker-compose.prod.yml pull
-            docker-compose -f docker-compose.prod.yml up -d
-            
-            # Cleanup
+            # Prune unused images to save space
             docker image prune -f
