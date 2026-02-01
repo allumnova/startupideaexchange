@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: ghcr.io/${IMAGE_NAME}/backend:latest
+    image: ghcr.io/${IMAGE_NAME}:backend
     restart: always
     environment:
       - PORT=5000
@@ -13,7 +13,7 @@ services:
       - db
 
   frontend:
-    image: ghcr.io/${IMAGE_NAME}/frontend:latest
+    image: ghcr.io/${IMAGE_NAME}:frontend
     restart: always
     ports:
       - "80:80"
