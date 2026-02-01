@@ -67,11 +67,8 @@ jobs:
             # Define correct image name (lowercase)
             export IMAGE_NAME=${{ env.IMAGE_NAME }}
             
-            # Replace placeholder in docker-compose.prod.yml with actual image name
-            # We match the variable format ${...} or just the generic structure
-            sed -i "s|ghcr.io/\${GITHUB_REPOSITORY}|ghcr.io/$IMAGE_NAME|g" docker-compose.prod.yml
-            
             # Pull and restart
+            # docker-compose will substitute ${IMAGE_NAME} from the exported var above
             docker-compose -f docker-compose.prod.yml pull
             docker-compose -f docker-compose.prod.yml up -d
             
