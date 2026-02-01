@@ -3,6 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -18,9 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Lowercase Repo Name
+      - name: Set lower case image name
         run: |
-          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+          echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
@@ -29,19 +30,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Build and push Backend image
         uses: docker/build-push-action@v4
         with:
           context: ./backend
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:latest
-          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Build and push Frontend image
         uses: docker/build-push-action@v4
@@ -49,18 +43,14 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:latest
-          labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Lowercase Repo Name
+      - name: Set lower case image name
         run: |
-          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
+          echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.10
@@ -70,13 +60,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ~/startup-marketplace
-            # Pull the latest images
+            
+            # Login to GHCR
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Define correct image name (lowercase)
             export IMAGE_NAME=${{ env.IMAGE_NAME }}
-            sed -i "s|ghcr.io/.*/backend:latest|ghcr.io/$IMAGE_NAME/backend:latest|g" docker-compose.prod.yml
-            sed -i "s|ghcr.io/.*/frontend:latest|ghcr.io/$IMAGE_NAME/frontend:latest|g" docker-compose.prod.yml
+            
+            # Replace placeholder in docker-compose.prod.yml with actual image name
+            # We match the variable format ${...} or just the generic structure
+            sed -i "s|ghcr.io/\${GITHUB_REPOSITORY}|ghcr.io/$IMAGE_NAME|g" docker-compose.prod.yml
+            
+            # Pull and restart
             docker-compose -f docker-compose.prod.yml pull
-            # Restart the services
             docker-compose -f docker-compose.prod.yml up -d
-            # Optional: Cleanup old images
+            
+            # Cleanup
             docker image prune -f
