@@ -11,6 +11,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+RUN npx prisma generate
+
 # Expose the port
 EXPOSE 5000
 
