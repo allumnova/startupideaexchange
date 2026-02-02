@@ -4,3 +4,9 @@ frontend/node_modules/
 .env
 .DS_Store
 postgres_data/
+
+# Deployment Secrets & Bundles
+deploy_key
+deploy_key.pub
+deploy_bundle.tar.gz
+*.tar.gz

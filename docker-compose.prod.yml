@@ -2,18 +2,18 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/startup-marketplace-backend:latest
     restart: always
     environment:
       - PORT=5000
-      - DATABASE_URL=postgresql://startup_admin:Marketplace_Secure_2026!@db:5432/startup_marketplace_db
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     ports:
       - "5001:5000"
     depends_on:
       - db
 
   frontend:
-    build: ./frontend
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/startup-marketplace-frontend:latest
     restart: always
     ports:
       - "3001:80"
@@ -24,9 +24,9 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      - POSTGRES_USER=startup_admin
-      - POSTGRES_PASSWORD=Marketplace_Secure_2026!
-      - POSTGRES_DB=startup_marketplace_db
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

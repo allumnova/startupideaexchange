@@ -5,8 +5,45 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
+
 jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:latest
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
+
   deploy:
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -19,16 +56,12 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copy files to VPS
+      - name: Copy configuration to VPS
         run: |
-          # Create directory if not exists
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} "mkdir -p ~/startup-marketplace"
-          
-          # Copy backend, frontend, and compose file
-          # We use tar + ssh for faster transfer than individual scp calls
-          tar czf deploy_bundle.tar.gz backend frontend docker-compose.prod.yml
-          scp -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no deploy_bundle.tar.gz ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~/startup-marketplace/
-          
+          # Copy the SANITIZED compose file (it's safe to copy)
+          scp -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no docker-compose.prod.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:~/startup-marketplace/
+
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -38,14 +71,19 @@ jobs:
           script: |
             cd ~/startup-marketplace
             
-            # Extract the code
-            tar xzf deploy_bundle.tar.gz
-            rm deploy_bundle.tar.gz
+            # Create local .env file from GitHub Secrets for Docker Compose
+            # These values stay on your VPS and are never visible in the public repo
+            echo "GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}" > .env
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
             
-            # Build and start containers directly on the VPS
-            # This bypasses all registry/packaging issues
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml up -d --build
+            # Login to GHCR on VPS using the GitHub-provided token
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
-            # Prune unused images to save space
+            # Pull new images and restart services
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            # Remove old images to save space
             docker image prune -f
