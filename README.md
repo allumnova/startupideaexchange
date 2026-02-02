@@ -1,5 +1,7 @@
 # Startup Marketplace
 
+![Build and Deploy](https://github.com/allumnova/startupideaexchange/actions/workflows/deploy.yml/badge.svg)
+
 A digital-first multi-vendor marketplace offering curated startup tools, templates, and services.
 
 ## Tech Stack
