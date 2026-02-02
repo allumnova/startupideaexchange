@@ -46,6 +46,7 @@ const Login = () => {
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
                             placeholder="e.g. founder@startup.io"
                             required
+                            autoComplete="username"
                         />
                     </div>
                     <div>
@@ -57,6 +58,7 @@ const Login = () => {
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
                             placeholder="••••••••"
                             required
+                            autoComplete="current-password"
                         />
                     </div>
                     <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
