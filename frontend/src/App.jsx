@@ -4,6 +4,9 @@ import { useAuth } from './context/AuthContext';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Dashboard from './components/Dashboard';
+import IdeaFeed from './components/Marketplace/IdeaFeed';
+import PostIdeaForm from './components/Marketplace/PostIdeaForm';
+import PublicProfile from './components/Collaboration/PublicProfile';
 
 const LandingPage = () => (
   <div className="min-h-screen mesh-gradient relative overflow-hidden">
@@ -105,6 +108,16 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/marketplace" element={<IdeaFeed />} />
+      <Route path="/profile/:userId" element={<PublicProfile />} />
+      <Route
+        path="/post-idea"
+        element={
+          <ProtectedRoute>
+            <PostIdeaForm />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/dashboard"
         element={

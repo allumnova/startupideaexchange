@@ -64,6 +64,24 @@ const Login = () => {
                     </button>
                 </form>
 
+                <div className="mt-8 pt-8 border-t border-white/5">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 text-center">Quick Demo Access</p>
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            onClick={() => { setEmail('demo.founder@exchange.com'); setPassword('password123'); }}
+                            className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl text-xs font-bold transition-all"
+                        >
+                            Demo Founder
+                        </button>
+                        <button
+                            onClick={() => { setEmail('alex.chen@allumnova.com'); setPassword('password123'); }}
+                            className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl text-xs font-bold transition-all"
+                        >
+                            Demo Investor
+                        </button>
+                    </div>
+                </div>
+
                 <p className="mt-8 text-center text-slate-400 text-sm">
                     Don't have an account? <a href="/signup" className="text-blue-400 font-semibold hover:text-blue-300">Create one</a>
                 </p>

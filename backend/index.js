@@ -4,6 +4,8 @@ const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
 
 const authRoutes = require('./authRoutes');
+const ideaRoutes = require('./ideaRoutes');
+const collaborationRoutes = require('./collaborationRoutes');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -14,6 +16,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/ideas', ideaRoutes);
+app.use('/api/collab', collaborationRoutes);
 
 app.get('/', (req, res) => {
   res.send('Startup Idea Exchange API is running...');

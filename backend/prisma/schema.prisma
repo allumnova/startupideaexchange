@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -26,6 +20,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   profile   Profile?
+  ideas     Idea[]
+  interests Interest[]
 }
 
 model Profile {
@@ -40,4 +36,34 @@ model Profile {
   interests   String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Idea {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  category    String
+  stage       String   // e.g., Concept, MVP, Scaling
+  equityOffer Float?   // Percentage of equity offered
+  tags        String[]
+  status      String   @default("OPEN") // OPEN, CLOSED
+  founderId   String
+  founder     User     @relation(fields: [founderId], references: [id], onDelete: Cascade)
+  interests   Interest[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Interest {
+  id        String   @id @default(uuid())
+  ideaId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String?  @db.Text
+  status    String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ideaId, userId])
 }
