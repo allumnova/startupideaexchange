@@ -1,26 +1,28 @@
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg');
+const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
 
+const authRoutes = require('./authRoutes');
+
 const app = express();
+const prisma = new PrismaClient();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+// Routes
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Startup Marketplace API is running...');
+  res.send('Startup Idea Exchange API is running...');
 });
 
 app.get('/health', async (req, res) => {
   try {
-    await pool.query('SELECT 1');
-    res.json({ status: 'OK', db: 'Connected' });
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'OK', db: 'Connected (Prisma)' });
   } catch (err) {
     res.status(500).json({ status: 'Error', error: err.message });
   }
