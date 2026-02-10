@@ -24,15 +24,15 @@ cd $REMOTE_DIR
 tar -xzf deployment.tar.gz
 docker compose down
 docker compose up --build -d
+echo 'Waiting for DB to be ready...'
+sleep 10
+docker exec ato-backend npx prisma db push --accept-data-loss
+docker exec ato-backend node prisma/seed.js
 "
 ssh -i $KEY -o StrictHostKeyChecking=no "$USER@$SERVER" $COMMANDS
 
 Write-Host "--- 5. Configuring Nginx ---" -ForegroundColor Cyan
-$NGINX_CMDS = "
-cp $REMOTE_DIR/nginx.conf /etc/nginx/sites-available/startupideaexchange
-ln -sf /etc/nginx/sites-available/startupideaexchange /etc/nginx/sites-enabled/
-nginx -t && systemctl reload nginx
-"
+$NGINX_CMDS = "cp $REMOTE_DIR/nginx.conf /etc/nginx/sites-available/startupideaexchange; ln -sf /etc/nginx/sites-available/startupideaexchange /etc/nginx/sites-enabled/; nginx -t && systemctl reload nginx"
 ssh -i $KEY -o StrictHostKeyChecking=no "$USER@$SERVER" $NGINX_CMDS
 
 Write-Host "--- 6. Cleanup ---" -ForegroundColor Cyan
