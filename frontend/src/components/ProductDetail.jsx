@@ -44,7 +44,7 @@ const ProductDetail = () => {
                     </p>
 
                     <div className="p-8 rounded-[2rem] bg-slate-50 border border-slate-100 italic font-medium text-slate-500">
-                        "Solving the core inefficiency of {product.problem?.title.toLowerCase()} with a production-ready MVP."
+                        "Solving the core inefficiency of {product.problem?.title?.toLowerCase()} with a production-ready MVP."
                     </div>
                 </div>
             </div>
@@ -73,14 +73,14 @@ const ProductDetail = () => {
                     <div className="mt-12 pt-8 border-t border-slate-50">
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold">
-                                {product.seller.profile?.firstName?.charAt(0)}
+                                {product.seller?.profile?.firstName?.charAt(0)}
                             </div>
                             <div>
-                                <div className="text-sm font-bold text-slate-900">{product.seller.profile?.firstName} (Seller)</div>
+                                <div className="text-sm font-bold text-slate-900">{product.seller?.profile?.firstName} (Seller)</div>
                                 <div className="text-[10px] font-medium text-slate-400">Verified Alumni Builder</div>
                             </div>
                         </div>
-                        <p className="text-xs text-slate-500 font-medium leading-relaxed italic">{product.seller.profile?.bio}</p>
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed italic">{product.seller?.profile?.bio}</p>
                     </div>
                 </div>
             </div>
