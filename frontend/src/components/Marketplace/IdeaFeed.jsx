@@ -25,21 +25,21 @@ const IdeaFeed = () => {
     }, [filter]);
 
     return (
-        <div className="min-h-screen mesh-gradient px-8 py-20">
+        <div className="min-h-screen bg-gray-50 text-slate-900 font-sans mesh-gradient px-8 py-20">
             <div className="max-w-7xl mx-auto">
                 <header className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
                     <div className="text-center md:text-left">
-                        <h1 className="text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-500">
+                        <h1 className="text-5xl font-extrabold mb-4 text-gray-900 font-display tracking-tight">
                             Idea Marketplace
                         </h1>
-                        <p className="text-slate-400 max-w-lg">
+                        <p className="text-gray-500 max-w-lg text-lg">
                             Discover the next generation of startups. Filter concepts by stage, category, or founder background.
                         </p>
                     </div>
 
                     <div className="flex gap-4">
                         <select
-                            className="glass px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-slate-300 focus:outline-none focus:border-blue-500 transition-all border-white/10 cursor-pointer"
+                            className="bg-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-gray-600 focus:outline-none focus:border-primary-500 transition-all border border-gray-200 cursor-pointer shadow-sm hover:border-gray-300"
                             onChange={(e) => setFilter({ ...filter, category: e.target.value })}
                         >
                             <option value="">All Categories</option>
@@ -49,7 +49,7 @@ const IdeaFeed = () => {
                             <option value="Health">Health</option>
                         </select>
                         <a href="/post-idea">
-                            <button className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/20 active:scale-95 transition-all">
+                            <button className="bg-primary-600 hover:bg-primary-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary-500/25 active:scale-95 transition-all">
                                 Post My Idea
                             </button>
                         </a>
@@ -57,7 +57,7 @@ const IdeaFeed = () => {
                 </header>
 
                 {loading ? (
-                    <div className="flex justify-center items-center py-20 text-slate-500 animate-pulse font-bold tracking-widest uppercase">
+                    <div className="flex justify-center items-center py-20 text-gray-400 animate-pulse font-bold tracking-widest uppercase text-sm">
                         Loading Concepts...
                     </div>
                 ) : (
@@ -70,8 +70,8 @@ const IdeaFeed = () => {
                             />
                         ))}
                         {ideas.length === 0 && (
-                            <div className="col-span-full py-32 text-center text-slate-500 font-medium">
-                                No ideas found matching your criteria. Be the first to <a href="/post-idea" className="text-blue-400 hover:underline">post one!</a>
+                            <div className="col-span-full py-32 text-center text-gray-500 font-medium">
+                                No ideas found matching your criteria. Be the first to <a href="/post-idea" className="text-primary-600 hover:underline font-bold">post one!</a>
                             </div>
                         )}
                     </div>

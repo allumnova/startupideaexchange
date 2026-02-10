@@ -32,68 +32,68 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen mesh-gradient flex items-center justify-center p-6">
-            <div className="glass max-w-lg w-full p-10 rounded-[2rem] border-white/10 shadow-2xl">
-                <h2 className="text-3xl font-bold mb-2 text-center">Join the Exchange</h2>
-                <p className="text-slate-400 text-center mb-8 text-sm">Start your startup journey today</p>
+        <div className="min-h-screen bg-gray-50 text-slate-900 font-sans mesh-gradient flex items-center justify-center p-6">
+            <div className="glass-card max-w-lg w-full p-10 rounded-[2rem] shadow-2xl shadow-primary-500/10">
+                <h2 className="text-3xl font-bold mb-2 text-center text-gray-900 font-display tracking-tight">Join the Exchange</h2>
+                <p className="text-gray-500 text-center mb-8 text-sm font-medium">Start your startup journey today</p>
 
-                {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-6 text-center">{error}</div>}
-                {success && <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-xl text-sm mb-6 text-center">Registration successful! Redirecting...</div>}
+                {error && <div className="bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-sm mb-6 text-center font-bold">{error}</div>}
+                {success && <div className="bg-green-50 border border-green-100 text-green-600 p-3 rounded-xl text-sm mb-6 text-center font-bold">Registration successful! Redirecting...</div>}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">First Name</label>
+                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">First Name</label>
                             <input
                                 type="text"
                                 value={formData.firstName}
                                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium placeholder:text-gray-400"
                                 placeholder="John"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Last Name</label>
+                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Last Name</label>
                             <input
                                 type="text"
                                 value={formData.lastName}
                                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium placeholder:text-gray-400"
                                 placeholder="Doe"
                                 required
                             />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Email Address</label>
                         <input
                             type="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium placeholder:text-gray-400"
                             placeholder="founder@startup.io"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Password</label>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Password</label>
                         <input
                             type="password"
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium placeholder:text-gray-400"
                             placeholder="••••••••"
                             required
                         />
                     </div>
-                    <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+                    <button className="w-full bg-primary-600 hover:bg-primary-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary-500/25 active:scale-[0.98]">
                         Create Account
                     </button>
                 </form>
 
-                <p className="mt-8 text-center text-slate-400 text-sm">
-                    Already have an account? <a href="/login" className="text-blue-400 font-semibold hover:text-blue-300">Sign in</a>
+                <p className="mt-8 text-center text-gray-400 text-sm font-medium">
+                    Already have an account? <a href="/login" className="text-primary-600 font-bold hover:text-primary-500 hover:underline">Sign in</a>
                 </p>
             </div>
         </div>

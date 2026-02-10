@@ -1,3 +1,6 @@
+// This is your Prisma schema file for ATO
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
@@ -13,16 +16,34 @@ enum Role {
   ADMIN
 }
 
+enum SolutionType {
+  IDEA
+  SERVICE
+  PRODUCT
+}
+
+enum Status {
+  OPEN
+  CLOSED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String   // Hashed password
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  profile   Profile?
-  ideas     Idea[]
-  interests Interest[]
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  role          Role        @default(USER)
+  onboarded     Boolean     @default(false)
+  userType      String?     // Builder, Founder, Buyer
+  industries    String[]
+  skills        String[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  profile       Profile?
+  problems      Problem[]
+  solutions     Solution[]
+  votes         Vote[]
+  transactions  Transaction[]
+  products      Product[]
 }
 
 model Profile {
@@ -33,38 +54,78 @@ model Profile {
   lastName    String?
   bio         String?
   avatarUrl   String?
-  skills      String[]
-  interests   String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-model Idea {
-  id          String   @id @default(uuid())
+model Problem {
+  id          String      @id @default(uuid())
   title       String
-  description String   @db.Text
+  description String      @db.Text
   category    String
-  stage       String   // e.g., Concept, MVP, Scaling
-  equityOffer Float?   // Percentage of equity offered
   tags        String[]
-  status      String   @default("OPEN") // OPEN, CLOSED
-  founderId   String
-  founder     User     @relation(fields: [founderId], references: [id], onDelete: Cascade)
-  interests   Interest[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      Status      @default(OPEN)
+  demandScore Int         @default(0)
+  posterId    String
+  poster      User        @relation(fields: [posterId], references: [id], onDelete: Cascade)
+  solutions   Solution[]
+  votes       Vote[]
+  products    Product[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
-model Interest {
-  id        String   @id @default(uuid())
-  ideaId    String
-  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  message   String?  @db.Text
-  status    String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Solution {
+  id          String       @id @default(uuid())
+  type        SolutionType
+  description String       @db.Text
+  links       String[]
+  problemId   String
+  problem     Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  votes       Vote[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
 
-  @@unique([ideaId, userId])
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  description String    @db.Text
+  price       Float
+  demoUrl     String?
+  downloadUrl String?
+  problemId   String
+  problem     Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  sellerId    String
+  seller      User      @relation(fields: [sellerId], references: [id], onDelete: Cascade) 
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Vote {
+  id          String   @id @default(uuid())
+  value       Int      // 1 for upvote, -1 for downvote
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId   String?
+  problem     Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  solutionId  String?
+  solution    Solution? @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
+  @@unique([userId, solutionId])
+}
+
+model Transaction {
+  id            String   @id @default(uuid())
+  amount        Float
+  currency      String   @default("INR")
+  status        String   // PENDING, COMPLETED, FAILED
+  paymentId     String?  @unique // Stripe/Razorpay ID
+  buyerId       String
+  buyer         User     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  productId     String?
+  createdAt     DateTime @default(now())
 }

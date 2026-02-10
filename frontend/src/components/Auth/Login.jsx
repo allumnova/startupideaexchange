@@ -29,63 +29,63 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen mesh-gradient flex items-center justify-center p-6">
-            <div className="glass max-w-md w-full p-10 rounded-[2rem] border-white/10 shadow-2xl">
-                <h2 className="text-3xl font-bold mb-2 text-center">Welcome Back</h2>
-                <p className="text-slate-400 text-center mb-8 text-sm">Log in to your founder account</p>
+        <div className="min-h-screen bg-gray-50 text-slate-900 font-sans mesh-gradient flex items-center justify-center p-6">
+            <div className="glass-card max-w-md w-full p-10 rounded-[2rem] shadow-2xl shadow-primary-500/10">
+                <h2 className="text-3xl font-bold mb-2 text-center text-gray-900 font-display tracking-tight">Welcome Back</h2>
+                <p className="text-gray-500 text-center mb-8 text-sm font-medium">Log in to your founder account</p>
 
-                {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-6 text-center">{error}</div>}
+                {error && <div className="bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-sm mb-6 text-center font-bold">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Email Address</label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium placeholder:text-gray-400"
                             placeholder="e.g. founder@startup.io"
                             required
                             autoComplete="username"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Password</label>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Password</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-primary-500 focus:bg-white transition-all font-medium placeholder:text-gray-400"
                             placeholder="••••••••"
                             required
                             autoComplete="current-password"
                         />
                     </div>
-                    <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+                    <button className="w-full bg-primary-600 hover:bg-primary-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary-500/25 active:scale-[0.98]">
                         Sign In
                     </button>
                 </form>
 
-                <div className="mt-8 pt-8 border-t border-white/5">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 text-center">Quick Demo Access</p>
+                <div className="mt-8 pt-8 border-t border-gray-100">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 text-center">Quick Demo Access</p>
                     <div className="grid grid-cols-2 gap-4">
                         <button
                             onClick={() => { setEmail('demo.founder@exchange.com'); setPassword('password123'); }}
-                            className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl text-xs font-bold transition-all"
+                            className="bg-white hover:bg-gray-50 border border-gray-200 py-3 rounded-xl text-xs font-bold text-gray-600 transition-all shadow-sm"
                         >
                             Demo Founder
                         </button>
                         <button
                             onClick={() => { setEmail('alex.chen@allumnova.com'); setPassword('password123'); }}
-                            className="bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl text-xs font-bold transition-all"
+                            className="bg-white hover:bg-gray-50 border border-gray-200 py-3 rounded-xl text-xs font-bold text-gray-600 transition-all shadow-sm"
                         >
                             Demo Investor
                         </button>
                     </div>
                 </div>
 
-                <p className="mt-8 text-center text-slate-400 text-sm">
-                    Don't have an account? <a href="/signup" className="text-blue-400 font-semibold hover:text-blue-300">Create one</a>
+                <p className="mt-8 text-center text-gray-400 text-sm font-medium">
+                    Don't have an account? <a href="/signup" className="text-primary-600 font-bold hover:text-primary-500 hover:underline">Create one</a>
                 </p>
             </div>
         </div>

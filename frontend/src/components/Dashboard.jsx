@@ -1,138 +1,107 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { NavLink } from 'react-router-dom';
 
 const Dashboard = () => {
-    const { user, logout } = useAuth();
-    const [myIdeas, setMyIdeas] = useState([]);
-    const [selectedIdea, setSelectedIdea] = useState(null);
-    const [interests, setInterests] = useState([]);
+    const [stats, setStats] = useState({ problems: [], solutions: [] });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchMyIdeas = async () => {
+        const fetchDashboardData = async () => {
             try {
-                const response = await fetch(`https://startupideaexcahnge.in/api/collab/profile/${user.id}`);
-                const data = await response.json();
-                setMyIdeas(data.ideas || []);
+                // Mocking dashboard stats for now since we need a dedicated endpoint
+                const problemsRes = await axios.get('/api/problems');
+                setStats({
+                    problems: problemsRes.data.slice(0, 3),
+                    solutions: []
+                });
             } catch (err) {
-                console.error('Error fetching my ideas:', err);
+                console.error(err);
+            } finally {
+                setLoading(false);
             }
         };
-        if (user) fetchMyIdeas();
-    }, [user]);
-
-    const viewInterests = async (ideaId) => {
-        try {
-            const response = await fetch(`https://startupideaexcahnge.in/api/collab/ideas/${ideaId}/interests`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            const data = await response.json();
-            setInterests(data);
-            setSelectedIdea(ideaId);
-        } catch (err) {
-            console.error('Error fetching interests:', err);
-        }
-    };
-
-    if (!user) {
-        return <div className="min-h-screen flex items-center justify-center">Redirecting to login...</div>;
-    }
+        fetchDashboardData();
+    }, []);
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white">
-            <nav className="glass border-b border-white/5 px-8 py-4 flex justify-between items-center sticky top-0 z-50">
-                <div className="flex items-center gap-4">
-                    <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
-                        Founder Console
-                    </div>
+        <div className="space-y-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tighter text-slate-900 mb-2">Founder Console</h1>
+                    <p className="text-slate-500 font-medium italic">Manage your problems and solution engagement.</p>
                 </div>
-                <div className="flex items-center gap-6">
-                    <div className="text-sm text-slate-400">
-                        Welcome, <span className="text-white font-semibold">{user.profile?.firstName || user.email}</span>
+                <NavLink to="/post-problem" className="btn-primary">
+                    Post a Problem
+                </NavLink>
+            </div>
+
+            {/* Stats Overview */}
+            <div className="grid md:grid-cols-3 gap-6">
+                {[
+                    { label: 'Active Problems', value: stats.problems.length, color: 'indigo' },
+                    { label: 'Solutions Received', value: '0', color: 'emerald' },
+                    { label: 'Market Demand', value: '---', color: 'amber' }
+                ].map((stat, i) => (
+                    <div key={i} className="glass-card p-8 bg-white ring-1 ring-slate-100/50">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{stat.label}</div>
+                        <div className={`text-5xl font-black text-${stat.color}-600 tracking-tighter`}>{stat.value}</div>
                     </div>
-                    <button
-                        onClick={logout}
-                        className="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 transition-colors"
-                    >
-                        Sign Out
-                    </button>
-                </div>
-            </nav>
+                ))}
+            </div>
 
-            <main className="max-w-7xl mx-auto px-8 py-12">
-                <header className="mb-12 flex justify-between items-end">
-                    <div>
-                        <h1 className="text-4xl font-bold mb-2">My Ideas</h1>
-                        <p className="text-slate-400">Manage your pitches and collaborations</p>
-                    </div>
-                    <a href="/marketplace" className="text-blue-400 text-sm font-bold hover:underline">Browse Marketplace →</a>
-                </header>
-
-                <div className="grid md:grid-cols-3 gap-8">
-                    <a href="/post-idea" className="glass p-8 rounded-3xl border-blue-500/20 bg-blue-500/5 flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-blue-500/10 transition-all border-dashed border-2 min-h-[200px]">
-                        <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7v14" /></svg>
-                        </div>
-                        <h3 className="font-bold text-lg mb-1">Post New Idea</h3>
-                        <p className="text-sm text-slate-400">Launch a new concept</p>
-                    </a>
-
-                    {myIdeas.map(idea => (
-                        <div key={idea.id} className="glass p-8 rounded-3xl border-white/5 flex flex-col">
-                            <div className="flex justify-between items-start mb-4">
-                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">{idea.category}</span>
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${idea.status === 'OPEN' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-                                    {idea.status}
-                                </span>
+            <div className="grid lg:grid-cols-2 gap-12">
+                {/* Recent Problems Section */}
+                <section className="space-y-6">
+                    <h2 className="text-xl font-black tracking-tight text-slate-900">Your Recent Problems</h2>
+                    <div className="space-y-4">
+                        {stats.problems.length === 0 ? (
+                            <div className="p-12 text-center glass-card border-dashed bg-slate-50/20">
+                                <p className="text-slate-400 font-medium">No problems posted yet.</p>
                             </div>
-                            <h3 className="text-lg font-bold mb-4">{idea.title}</h3>
-                            <button
-                                onClick={() => viewInterests(idea.id)}
-                                className="mt-auto w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/5"
-                            >
-                                Inbound Interests
-                            </button>
-                        </div>
-                    ))}
-                </div>
-
-                {selectedIdea && (
-                    <div className="mt-20 border-t border-white/5 pt-12 animate-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex justify-between items-end mb-8">
-                            <h2 className="text-2xl font-bold">Interested Partners</h2>
-                            <button onClick={() => setSelectedIdea(null)} className="text-slate-500 text-xs hover:text-white">Close Section</button>
-                        </div>
-
-                        <div className="space-y-4">
-                            {interests.length === 0 ? (
-                                <p className="text-slate-500 text-sm italic">No one has expressed interest in this idea yet.</p>
-                            ) : (
-                                interests.map(interest => (
-                                    <div key={interest.id} className="glass p-6 rounded-2xl border-white/5 flex flex-col md:flex-row gap-6">
-                                        <div className="flex items-start gap-4 shrink-0">
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-lg">
-                                                {interest.user.profile?.firstName?.[0]}
-                                            </div>
-                                            <div>
-                                                <div className="font-bold">{interest.user.profile?.firstName} {interest.user.profile?.lastName}</div>
-                                                <div className="text-[10px] text-slate-500 uppercase tracking-widest font-black">{interest.user.email}</div>
-                                            </div>
-                                        </div>
-                                        <div className="flex-grow">
-                                            <p className="text-sm text-slate-300 italic">"{interest.message}"</p>
-                                        </div>
-                                        <div className="flex gap-2 self-end md:self-center">
-                                            <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">Connect</button>
-                                            <button className="bg-white/5 hover:bg-white/10 text-slate-400 px-4 py-2 rounded-lg text-xs font-bold border border-white/5 transition-all">Decline</button>
-                                        </div>
+                        ) : (
+                            stats.problems.map(p => (
+                                <div key={p.id} className="p-6 glass-card bg-white border border-slate-50 flex justify-between items-center group cursor-pointer hover:scale-[1.01] transition-all">
+                                    <div>
+                                        <div className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{p.title}</div>
+                                        <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{p.category}</div>
                                     </div>
-                                ))
-                            )}
+                                    <div className="text-right">
+                                        <div className="text-sm font-black text-indigo-600">{p.demandScore}%</div>
+                                        <div className="text-[8px] font-black uppercase text-slate-300 tracking-widest">Demand</div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </section>
+
+                {/* Platform Activity Section */}
+                <section className="space-y-6">
+                    <h2 className="text-xl font-black tracking-tight text-slate-900">Platform Activity</h2>
+                    <div className="glass-card p-8 bg-slate-50/50 border-none relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-8">
+                            <div className="w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl"></div>
+                        </div>
+                        <div className="space-y-8 relative z-10">
+                            <div className="flex gap-4 items-start">
+                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-1.5 shadow-lg shadow-emerald-500/20"></div>
+                                <div>
+                                    <p className="text-sm font-bold text-slate-800 leading-snug">New solution posted for "Real-time Supply Chain AI"</p>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">By James Miller • 2m ago</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4 items-start">
+                                <div className="w-2.5 h-2.5 rounded-full bg-amber-500 mt-1.5 shadow-lg shadow-amber-500/20"></div>
+                                <div>
+                                    <p className="text-sm font-bold text-slate-800 leading-snug">Demand spike detected in GreenTech category</p>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">+15% engagement in 24h</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                )}
-            </main>
+                </section>
+            </div>
         </div>
     );
 };

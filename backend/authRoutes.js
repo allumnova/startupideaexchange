@@ -86,4 +86,33 @@ router.post('/login', async (req, res) => {
     }
 });
 
+const authMiddleware = require('./authMiddleware');
+
+// Update Profile
+router.put('/profile', authMiddleware, async (req, res) => {
+    try {
+        const { firstName, lastName, bio, skills, industries } = req.body;
+        const userId = req.user.id;
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                skills,
+                industries,
+                profile: {
+                    upsert: {
+                        create: { firstName, lastName, bio },
+                        update: { firstName, lastName, bio }
+                    }
+                }
+            },
+            include: { profile: true }
+        });
+
+        res.json({ message: 'Profile updated successfully', user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating profile', error: error.message });
+    }
+});
+
 module.exports = router;

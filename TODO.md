@@ -1,42 +1,33 @@
-# Startup Idea Exchange - Roadmap & TODO
+# ATO (Alumni To Owner) - Roadmap & TODO
 
-This document tracks the progressive development of the platform across four key phases. 
+This document tracks the transformation of the platform into a Problem-Solution Marketplace across four key phases.
 
-> [!NOTE]
-> AI features are intentionally excluded from this initial roadmap and will be added as a separate stage later.
-> Deployment will happen at the **end of each phase** to ensure stability.
+## Phase 1: Foundation & Onboarding
+**Goal**: Establish identity and the refined user entry flow.
+- [ ] **DB Migration**: Update schema to support Problems, Solutions, and Onboarding.
+- [ ] **Onboarding Flow**: Implement Industry/Skill selection and Role choosing (Builder/Buyer/Founder).
+- [ ] **Landing Page**: Update Hero section with new "ATO" branding and "How it works" steps.
+- [ ] **Navigation**: Implement responsive Top Nav and Mobile Bottom Tab Bar.
+- [ ] **Auth UI**: Redesign Login/Signup to match the new minimalist design system.
 
-## Phase 1: Foundation (The Shell)
-**Goal**: Establish the core architecture, design system, and user identity.
-- [ ] **Database Setup**: Design and implement PostgreSQL schema (Users, Profiles).
-- [ ] **Initial UI**: Setup Tailwind CSS with premium theme, fonts, and layout.
-- [ ] **Authentication**: Secure Login/Signup/OAuth integration (Google/GitHub).
-- [ ] **User Profile**: Basic dashboard for users to manage their identity.
-- [ ] **Landing Page**: High-conversion hero section and "How it Works" guide.
-- [ ] **STAGING DEPLOY**: Verify auth and UI on production server.
+## Phase 2: Problem-Solution Core
+**Goal**: Launch the engagement engine.
+- [ ] **Problem Management**: Flow for posting and browsing problems (Sort by Demand/Newest).
+- [ ] **Solution Engine**: Multi-type solution posting (Idea, Service, Built Product) under problems.
+- [ ] **Voting System**: Upvote/Downvote logic for both problems and solutions.
+- [ ] **Problem Detail**: Rich detail page with Stats, Demand Score, and linked Solutions.
 
-## Phase 2: Idea Management (The Core)
-**Goal**: Enable the primary user action: sharing and browsing ideas.
-- [ ] **Schema Update**: Add `ideas`, `categories`, and `votes` tables.
-- [ ] **Idea Posting**: Multi-step form for sharing startup concepts.
-- [ ] **Marketplace Feed**: Grid/List view with advanced filtering and sorting.
-- [ ] **Idea Details**: dedicated page for each idea with discussion threads.
-- [ ] **Search**: Implementation of full-text search for ideas.
-- [ ] **PHASE 2 DEPLOY**: Live marketplace testing.
+## Phase 3: MVP Store & Commerce
+**Goal**: Enable monetization and product exchange.
+- [ ] **Product Storefront**: Grid view for browsing built products/MVPs.
+- [ ] **Payment Gateway**: Integration for secure transactions (Stripe/Razorpay).
+- [ ] **Checkout System**: Cart/Checkout summary with "Verify Signature" logic.
+- [ ] **Access Control**: Post-purchase delivery (Downloads/Documentation) for buyers.
 
-## Phase 3: Collaboration (The Matching)
-**Goal**: Turn ideas into teams through cofounder matching and chat.
-- [ ] **Cofounder Finder**: Matching algorithm based on skills and interests.
-- [ ] **Messaging System**: Real-time chat (Socket.io) for collaborators.
-- [ ] **Requests System**: "Interest" requests to collaborate on an idea.
-- [ ] **Notifications**: In-app and email alerts for messages and matches.
-- [ ] **PHASE 3 DEPLOY**: Test real-time features on server.
-
-## Phase 4: Commerce & Polish (The Business)
-**Goal**: Implement monetization, admin control, and education.
-- [ ] **Marketplace Transactions**: Basic checkout flow for buying ideas.
-- [ ] **Premium Plans**: Integration with payment gateway (Stripe/Razorpay).
-- [ ] **Failed Startup Stories**: Educational blog/wiki section.
-- [ ] **Admin Dashboard**: Moderation tools for users and idea listings.
-- [ ] **SEO & Performance**: Final audit and production optimizations.
-- [ ] **FINAL PRODUCTION LAUNCH**: Full feature set live.
+## Phase 4: Admin & Advanced Ecosystem
+**Goal**: Full platform control and user refinement.
+- [ ] **Admin Console**: Moderate problems/solutions, feature products, and track revenue.
+- [ ] **Account Hub**: Full settings (Profile, Security, Notifications, Payments History).
+- [ ] **Notifications**: Real-time alerts for interest, votes, and purchases.
+- [ ] **UI Polish**: Implement horizontal scrolling list components and loading skeletons.
+- [ ] **FINAL LAUNCH**: Production deployment of the complete ATO ecosystem.

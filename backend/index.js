@@ -4,8 +4,9 @@ const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
 
 const authRoutes = require('./authRoutes');
-const ideaRoutes = require('./ideaRoutes');
-const collaborationRoutes = require('./collaborationRoutes');
+const problemRoutes = require('./problemRoutes');
+const productRoutes = require('./productRoutes');
+const transactionRoutes = require('./transactionRoutes');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -16,11 +17,12 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/ideas', ideaRoutes);
-app.use('/api/collab', collaborationRoutes);
+app.use('/api/problems', problemRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Startup Idea Exchange API is running...');
+  res.send('ATO API is running...');
 });
 
 app.get('/health', async (req, res) => {

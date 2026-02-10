@@ -6,12 +6,31 @@ export default {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['Inter', 'sans-serif'],
+                display: ['Outfit', 'sans-serif'],
+            },
             colors: {
                 primary: {
-                    dark: '#0f172a',    // Slate 900
-                    electric: '#3b82f6', // Blue 500
-                    slate: '#475569',    // Slate 600
+                    50: '#f5f3ff',
+                    100: '#ede9fe',
+                    200: '#ddd6fe',
+                    300: '#c4b5fd',
+                    400: '#a78bfa',
+                    500: '#8b5cf6', // Violet 500 (Vibrant Brand Color)
+                    600: '#7c3aed',
+                    700: '#6d28d9',
+                    800: '#5b21b6',
+                    900: '#4c1d95',
+                },
+                accent: {
+                    50: '#ecfeff',
+                    100: '#cffafe',
+                    500: '#06b6d4', // Cyan 500 (Secondary)
                 }
+            },
+            boxShadow: {
+                'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
             }
         },
     },
