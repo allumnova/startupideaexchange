@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Industries = ['AI/ML', 'GreenTech', 'Fintech', 'EdTech', 'Health', 'E-commerce', 'SaaS', 'Robotics'];
 const Skills = ['React', 'Node.js', 'Python', 'UI/UX Design', 'Product Management', 'Sales', 'Marketing', 'Machine Learning'];
@@ -10,11 +13,14 @@ const Roles = [
 
 const Onboarding = () => {
     const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         industries: [],
         skills: [],
         role: ''
     });
+    const navigate = useNavigate();
+    const { refreshUser } = useAuth();
 
     const toggleSelection = (key, value) => {
         setFormData(prev => ({
@@ -26,6 +32,23 @@ const Onboarding = () => {
     };
 
     const nextStep = () => setStep(prev => prev + 1);
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            await axios.put('/api/auth/profile', formData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            await refreshUser(); // Update user state in context
+            navigate('/dashboard');
+        } catch (error) {
+            console.error('Onboarding failed:', error);
+            alert('Failed to complete setup. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white flex items-center justify-center p-6 relative overflow-hidden">
@@ -63,8 +86,8 @@ const Onboarding = () => {
                                 key={item}
                                 onClick={() => toggleSelection('industries', item)}
                                 className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all border ${formData.industries.includes(item)
-                                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                        : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50'
+                                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50'
                                     }`}
                             >
                                 {item}
@@ -80,8 +103,8 @@ const Onboarding = () => {
                                 key={item}
                                 onClick={() => toggleSelection('skills', item)}
                                 className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all border ${formData.skills.includes(item)
-                                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                        : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50'
+                                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-slate-50'
                                     }`}
                             >
                                 {item}
@@ -97,8 +120,8 @@ const Onboarding = () => {
                                 key={role.id}
                                 onClick={() => setFormData(prev => ({ ...prev, role: role.id }))}
                                 className={`w-full p-6 rounded-3xl text-left transition-all border-2 ${formData.role === role.id
-                                        ? 'bg-indigo-50 border-indigo-600'
-                                        : 'bg-white border-slate-50 hover:border-slate-100'
+                                    ? 'bg-indigo-50 border-indigo-600'
+                                    : 'bg-white border-slate-50 hover:border-slate-100'
                                     }`}
                             >
                                 <div className="font-black text-slate-900 mb-1">{role.title}</div>
@@ -109,15 +132,20 @@ const Onboarding = () => {
                 )}
 
                 <button
-                    onClick={step === 3 ? () => console.log('Submit', formData) : nextStep}
+                    onClick={step === 3 ? handleSubmit : nextStep}
                     disabled={
+                        loading ||
                         (step === 1 && formData.industries.length === 0) ||
                         (step === 2 && formData.skills.length === 0) ||
                         (step === 3 && !formData.role)
                     }
                     className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {step === 3 ? "Complete Setup" : "Continue"}
+                    {loading ? (
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    ) : (
+                        step === 3 ? "Complete Setup" : "Continue"
+                    )}
                 </button>
             </div>
         </div>
