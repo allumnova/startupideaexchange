@@ -86,56 +86,58 @@ router.post('/login', async (req, res) => {
         console.error('LOGIN ERROR:', error);
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
-    // Get Current User Profile
-    router.get('/me', authMiddleware, async (req, res) => {
-        try {
-            const userId = req.user.userId;
-            const user = await prisma.user.findUnique({
-                where: { id: userId },
-                include: { profile: true }
-            });
+});
 
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
+const authMiddleware = require('./authMiddleware');
 
-            res.json({ user });
-        } catch (error) {
-            console.error('ME ROUTE ERROR:', error);
-            res.status(500).json({ message: 'Error fetching profile', error: error.message });
+// Get Current User Profile
+router.get('/me', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: { profile: true }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
-    });
 
-    const authMiddleware = require('./authMiddleware');
+        res.json({ user });
+    } catch (error) {
+        console.error('ME ROUTE ERROR:', error);
+        res.status(500).json({ message: 'Error fetching profile', error: error.message });
+    }
+});
 
-    // Update Profile and Complete Onboarding
-    router.put('/profile', authMiddleware, async (req, res) => {
-        try {
-            const { firstName, lastName, bio, skills, industries, role } = req.body;
-            const userId = req.user.userId; // Use userId from decoded token
+// Update Profile and Complete Onboarding
+router.put('/profile', authMiddleware, async (req, res) => {
+    try {
+        const { firstName, lastName, bio, skills, industries, role } = req.body;
+        const userId = req.user.userId; // Use userId from decoded token
 
-            const updatedUser = await prisma.user.update({
-                where: { id: userId },
-                data: {
-                    skills: skills || [],
-                    industries: industries || [],
-                    role: role || 'USER',
-                    onboarded: true,
-                    profile: {
-                        upsert: {
-                            create: { firstName, lastName, bio },
-                            update: { firstName, lastName, bio }
-                        }
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                skills: skills || [],
+                industries: industries || [],
+                role: role || 'USER',
+                onboarded: true,
+                profile: {
+                    upsert: {
+                        create: { firstName, lastName, bio },
+                        update: { firstName, lastName, bio }
                     }
-                },
-                include: { profile: true }
-            });
+                }
+            },
+            include: { profile: true }
+        });
 
-            res.json({ message: 'Profile updated successfully', user: updatedUser });
-        } catch (error) {
-            console.error('PROFILE UPDATE ERROR:', error);
-            res.status(500).json({ message: 'Error updating profile', error: error.message });
-        }
-    });
+        res.json({ message: 'Profile updated successfully', user: updatedUser });
+    } catch (error) {
+        console.error('PROFILE UPDATE ERROR:', error);
+        res.status(500).json({ message: 'Error updating profile', error: error.message });
+    }
+});
 
-    module.exports = router;
+module.exports = router;
