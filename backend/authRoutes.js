@@ -121,7 +121,7 @@ router.put('/profile', authMiddleware, async (req, res) => {
             data: {
                 skills: skills || [],
                 industries: industries || [],
-                role: role || 'USER',
+                userType: role, // 'Builder', 'Founder', 'Buyer'
                 onboarded: true,
                 profile: {
                     upsert: {
