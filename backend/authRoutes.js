@@ -40,6 +40,7 @@ router.post('/register', async (req, res) => {
 
         res.status(201).json({ message: 'User created successfully', userId: user.id });
     } catch (error) {
+        console.error('REGISTRATION ERROR:', error);
         res.status(500).json({ message: 'Error creating user', error: error.message });
     }
 });
@@ -82,6 +83,7 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('LOGIN ERROR:', error);
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
 });
