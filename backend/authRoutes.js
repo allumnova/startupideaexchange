@@ -110,18 +110,25 @@ router.get('/me', authMiddleware, async (req, res) => {
     }
 });
 
+const fs = require('fs');
+
 // Update Profile and Complete Onboarding
 router.put('/profile', authMiddleware, async (req, res) => {
+    const debug = {
+        timestamp: new Date().toISOString(),
+        user: req.user,
+        body: req.body
+    };
     try {
         const { firstName, lastName, bio, skills, industries, role } = req.body;
-        const userId = req.user.userId; // Use userId from decoded token
+        const userId = req.user.userId;
 
         const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
                 skills: skills || [],
                 industries: industries || [],
-                userType: role, // 'Builder', 'Founder', 'Buyer'
+                userType: role,
                 onboarded: true,
                 profile: {
                     upsert: {
@@ -133,8 +140,18 @@ router.put('/profile', authMiddleware, async (req, res) => {
             include: { profile: true }
         });
 
+        debug.success = true;
+        fs.appendFileSync('/tmp/profile_debug.log', JSON.stringify(debug) + '\n');
         res.json({ message: 'Profile updated successfully', user: updatedUser });
     } catch (error) {
+        debug.success = false;
+        debug.error = {
+            message: error.message,
+            code: error.code,
+            meta: error.meta,
+            stack: error.stack
+        };
+        fs.appendFileSync('/tmp/profile_debug.log', JSON.stringify(debug) + '\n');
         console.error('PROFILE UPDATE ERROR:', error);
         res.status(500).json({ message: 'Error updating profile', error: error.message });
     }
